@@ -41,7 +41,8 @@ services:
       - rabbitmq
     environment:
       REDIS_URL: redis://redis:6379
-      RABBITMQ: amqp://rabbitmq:5672
+      # RABBITMQ: amqp://rabbitmq:5672
+      RABBITMQ: amqp://guest:guest@rabbitmq:5672
 
   search-service:
     build: ./search-service
