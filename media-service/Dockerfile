@@ -1,15 +1,20 @@
-# use the official nodejs 18 image with alpine linux as the base image
+# Use Node.js 18 Alpine image
 FROM node:18-alpine
 
-WORKDIR /use/src/app
+# Set correct working directory
+WORKDIR /usr/src/app
 
-COPY package*.json ./
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json ./
 
-RUN npm ci --only=production
+# Install only production dependencies
+RUN npm ci --omit=dev
 
+# Copy rest of the app
 COPY . .
 
-#expose the port to which app listen 
+# Expose port
 EXPOSE 3003
 
+# Start the service
 CMD ["node", "src/server.js"]

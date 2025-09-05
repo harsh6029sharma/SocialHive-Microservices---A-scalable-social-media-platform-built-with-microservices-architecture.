@@ -2,7 +2,9 @@ version: "3.9"
 
 services:
   api-gateway:
-    build: ./api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
@@ -21,7 +23,9 @@ services:
       - search-service
 
   identity-service:
-    build: ./identity-service
+    build:
+      context: ./identity-service
+      dockerfile: Dockerfile
     ports:
       - "3001:3001"
     environment:
@@ -31,7 +35,9 @@ services:
       MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
   post-service:
-    build: ./post-service
+    build:
+      context: ./post-service
+      dockerfile: Dockerfile
     ports:
       - "3002:3002"
     environment:
@@ -41,7 +47,9 @@ services:
       MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
   media-service:
-    build: ./media-service
+    build:
+      context: ./media-service
+      dockerfile: Dockerfile
     ports:
       - "3003:3003"
     environment:
@@ -51,7 +59,9 @@ services:
       MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
   search-service:
-    build: ./search-service
+    build:
+      context: ./search-service
+      dockerfile: Dockerfile
     ports:
       - "3004:3004"
     environment:
