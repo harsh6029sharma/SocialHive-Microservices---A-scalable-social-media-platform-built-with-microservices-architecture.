@@ -6,7 +6,7 @@ const Redis = require('ioredis')
 const cors = require('cors')
 const errorHandler = require('./middleware/errorHandler')
 const logger = require('./utils/logger');
-const connectToDB = require('./database/db');
+const connectWithRetry = require('./database/db');
 const { connectToRabbitMQ, consumeEvent } = require('./utils/rabbitmq');
 const searchRoutes = require('./routes/search-routes');
 const { handlePostCreated } = require('./eventHandlers/search-event-handler');
@@ -17,7 +17,7 @@ const app = express()
 const PORT = process.env.PORT || 3004
 
 //connect to database mongodb
-connectToDB();
+connectWithRetry()
 
 const redisClient = new Redis(process.env.REDIS_URL)
 

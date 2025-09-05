@@ -1,7 +1,7 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 const express = require('express')
-const connectToDB = require('./database/db')
+const connectWithRetry = require('./database/db')
 const helmet = require('helmet')
 const cors = require('cors')
 const logger = require('./utils/logger')
@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT||3001;
 
 //connect to mongoDB
-connectToDB();
+connectWithRetry()
 
 const redisClient= new Redis(process.env.REDIS_URL)
 

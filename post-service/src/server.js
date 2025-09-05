@@ -8,7 +8,7 @@ const cors = require('cors')
 const postRoutes = require('./routes/post-routes')
 const errorHandler = require('./middleware/errorHandler')
 const logger = require('./utils/logger');
-const connectToDB = require('./database/db');
+const connectWithRetry = require('./database/db');
 const { connectToRabbitMQ } = require('./utils/rabbitmq');
 
 const app = express()
@@ -16,7 +16,7 @@ const app = express()
 const PORT = process.env.PORT || 3002
 
 //connect to database mongodb
-connectToDB();
+connectWithRetry()
 
 const redisClient = new Redis(process.env.REDIS_URL)
 
