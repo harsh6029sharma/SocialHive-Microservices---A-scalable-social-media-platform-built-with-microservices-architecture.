@@ -1,33 +1,23 @@
-# Render Blueprint (render.yaml) for SocialHive Microservices
-# YEH CORRECTED VERSION HAI
-
 services:
-  # 1. Managed Database Services
   - name: redis
     type: redis
     plan: free
-    # ERROR FIX 1: IP Allow List add kiya gaya hai
-    # Isse humari sabhi services Redis se connect kar payengi.
     ipAllowList:
-      - group: all # 'all' group ka matlab hai is project ki sabhi services
+      - group: all
 
-  # 2. Public Facing Service (API Gateway)
   - name: api-gateway
     type: web
     plan: starter
     env: docker
     dockerfilePath: ./api-gateway/Dockerfile
     envVars:
-      # ERROR FIX 2: 'internalUrl' ko 'connectionString' se replace kiya gaya hai
       - key: REDIS_URL
         fromService:
           type: redis
           name: redis
           property: connectionString
-      # ERROR FIX 3: Secrets ko handle karne ka sahi tarika
       - key: MESSAGE_BROKER_URL
-        sync: false # Iski value hum Render dashboard me set karenge
-      # NOTE: 'url' property sahi hai, doosre errors ki wajah se galat dikh raha tha.
+        sync: false
       - key: IDENTITY_SERVICE_URL
         fromService:
           type: pserv
@@ -49,7 +39,6 @@ services:
           name: search-service
           property: url
 
-  # 3. Internal Private Services
   - name: identity-service
     type: pserv
     plan: free
@@ -64,7 +53,7 @@ services:
       - key: MESSAGE_BROKER_URL
         sync: false
       - key: MONGO_URI
-        sync: false # Iski value bhi dashboard me set karenge
+        sync: false
 
   - name: post-service
     type: pserv
