@@ -1,10 +1,11 @@
 services:
+  # Redis Database
   - name: redis
     type: redis
     plan: free
-    ipAllowList:
-      - group: all
+    ipAllowList: []   # allow all by default
 
+  # API Gateway
   - name: api-gateway
     type: web
     plan: free
@@ -16,8 +17,6 @@ services:
           type: redis
           name: redis
           property: connectionString
-      - key: MESSAGE_BROKER_URL
-        sync: false
       - key: IDENTITY_SERVICE_URL
         fromService:
           type: web
@@ -28,19 +27,13 @@ services:
           type: web
           name: post-service
           property: url
-      - key: MEDIA_SERVICE_URL
+      - key: NOTIFICATION_SERVICE_URL
         fromService:
           type: web
-          name: media-service
+          name: notification-service
           property: url
-      - key: SEARCH_SERVICE_URL
-        fromService:
-          type: web
-          name: search-service
-          property: url
-      - key: MONGO_URI
-        sync: false
 
+  # Identity Service
   - name: identity-service
     type: web
     plan: free
@@ -52,11 +45,8 @@ services:
           type: redis
           name: redis
           property: connectionString
-      - key: MESSAGE_BROKER_URL
-        sync: false
-      - key: MONGO_URI
-        sync: false
 
+  # Post Service
   - name: post-service
     type: web
     plan: free
@@ -68,39 +58,16 @@ services:
           type: redis
           name: redis
           property: connectionString
-      - key: MESSAGE_BROKER_URL
-        sync: false
-      - key: MONGO_URI
-        sync: false
 
-  - name: media-service
+  # Notification Service
+  - name: notification-service
     type: web
     plan: free
     env: docker
-    dockerfilePath: ./media-service/Dockerfile
+    dockerfilePath: ./notification-service/Dockerfile
     envVars:
       - key: REDIS_URL
         fromService:
           type: redis
           name: redis
           property: connectionString
-      - key: MESSAGE_BROKER_URL
-        sync: false
-      - key: MONGO_URI
-        sync: false
-
-  - name: search-service
-    type: web
-    plan: free
-    env: docker
-    dockerfilePath: ./search-service/Dockerfile
-    envVars:
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: redis
-          property: connectionString
-      - key: MESSAGE_BROKER_URL
-        sync: false
-      - key: MONGO_URI
-        sync: false
