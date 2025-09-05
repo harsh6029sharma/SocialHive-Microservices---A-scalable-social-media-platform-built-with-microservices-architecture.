@@ -1,0 +1,116 @@
+# Render Blueprint (render.yaml) for SocialHive Microservices
+# Ye file aapke docker-compose.yml ka Render version hai.
+
+services:
+  # 1. Managed Database Services
+  # Hum Docker image ke bajaye Render ki managed service use kar rahe hain.
+  - name: redis
+    type: redis
+    plan: free # Production ke liye paid plan use karein
+
+  # 2. Public Facing Service (API Gateway)
+  # Yeh service public internet se traffic receive karegi.
+  - name: api-gateway
+    type: web
+    plan: starter # Ya aapki traffic ke hisaab se koi aur plan
+    env: docker
+    # Apne api-gateway folder mein Dockerfile ka path dein
+    dockerfilePath: ./api-gateway/Dockerfile
+    envVars:
+      # Render Redis service ka internal URL automatically inject kar dega.
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: internalUrl
+      # RabbitMQ ka URL hum secrets se lenge (niche explanation dekhein).
+      - key: MESSAGE_BROKER_URL
+        fromSecret: RABBITMQ_URL
+      # Baki services ke internal URLs bhi Render automatically dega.
+      # NOTE: Ensure your code uses these env vars to connect to other services.
+      - key: IDENTITY_SERVICE_URL
+        fromService:
+          type: pserv
+          name: identity-service
+          property: url
+      - key: POST_SERVICE_URL
+        fromService:
+          type: pserv
+          name: post-service
+          property: url
+      - key: MEDIA_SERVICE_URL
+        fromService:
+          type: pserv
+          name: media-service
+          property: url
+      - key: SEARCH_SERVICE_URL
+        fromService:
+          type: pserv
+          name: search-service
+          property: url
+
+  # 3. Internal Private Services
+  # Ye services sirf aapas mein ya API Gateway se communicate karengi.
+  - name: identity-service
+    type: pserv # 'pserv' for Private Service
+    plan: free
+    env: docker
+    dockerfilePath: ./identity-service/Dockerfile
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: internalUrl
+      - key: MESSAGE_BROKER_URL
+        fromSecret: RABBITMQ_URL
+      - key: MONGO_URI # Example: MongoDB connection string
+        fromSecret: MONGO_URI # Ise bhi secrets me daalein
+
+  - name: post-service
+    type: pserv
+    plan: free
+    env: docker
+    dockerfilePath: ./post-service/Dockerfile
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: internalUrl
+      - key: MESSAGE_BROKER_URL
+        fromSecret: RABBITMQ_URL
+      - key: MONGO_URI
+        fromSecret: MONGO_URI
+
+  - name: media-service
+    type: pserv
+    plan: free
+    env: docker
+    dockerfilePath: ./media-service/Dockerfile
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: internalUrl
+      - key: MESSAGE_BROKER_URL
+        fromSecret: RABBITMQ_URL
+      - key: MONGO_URI
+        fromSecret: MONGO_URI
+
+  - name: search-service
+    type: pserv
+    plan: free
+    env: docker
+    dockerfilePath: ./search-service/Dockerfile
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: internalUrl
+      - key: MESSAGE_BROKER_URL
+        fromSecret: RABBITMQ_URL
+      - key: MONGO_URI
+        fromSecret: MONGO_URI

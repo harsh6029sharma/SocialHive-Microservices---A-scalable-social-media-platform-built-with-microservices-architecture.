@@ -1,62 +1,81 @@
-
 services:
   api-gateway:
     build: ./api-gateway
     ports:
       - "3000:3000"
     env_file: ./api-gateway/.env
-    depends_on:
-      - redis
-      - rabbitmq
     environment:
-      REDIS_URL: redis://redis:6379
-      RABBITMQ: amqp://rabbitmq:5672
+      # Environment variables yahan override ho jaate hain
+      - REDIS_URL=redis://redis:6379
+      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
+    depends_on:
+      # Gateway ko sabhi services ke taiyaar hone ka wait karna chahiye
+      identity-service:
+        condition: service_started
+      post-service:
+        condition: service_started
+      media-service:
+        condition: service_started
+      search-service:
+        condition: service_started
 
   identity-service:
     build: ./identity-service
     env_file: ./identity-service/.env
-    depends_on:
-      - redis
-      - rabbitmq
     environment:
-      REDIS_URL: redis://redis:6379
-      RABBITMQ: amqp://rabbitmq:5672
+      - REDIS_URL=redis://redis:6379
+      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
+    depends_on:
+      redis:
+        condition: service_healthy # <-- YEH ZAROORI HAI
+      rabbitmq:
+        condition: service_healthy # <-- YEH ZAROORI HAI
 
   post-service:
     build: ./post-service
     env_file: ./post-service/.env
-    depends_on:
-      - redis
-      - rabbitmq
     environment:
-      REDIS_URL: redis://redis:6379
-      RABBITMQ: amqp://rabbitmq:5672
+      - REDIS_URL=redis://redis:6379
+      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
+    depends_on:
+      redis:
+        condition: service_healthy # <-- YEH ZAROORI HAI
+      rabbitmq:
+        condition: service_healthy # <-- YEH ZAROORI HAI
 
   media-service:
     build: ./media-service
     env_file: ./media-service/.env
-    depends_on:
-      - redis
-      - rabbitmq
     environment:
-      REDIS_URL: redis://redis:6379
-      # RABBITMQ: amqp://rabbitmq:5672
-      RABBITMQ: amqp://rabbitmq:5672
+      - REDIS_URL=redis://redis:6379
+      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
+    depends_on:
+      redis:
+        condition: service_healthy # <-- YEH ZAROORI HAI
+      rabbitmq:
+        condition: service_healthy # <-- YEH ZAROORI HAI
 
   search-service:
     build: ./search-service
     env_file: ./search-service/.env
-    depends_on:
-      - redis
-      - rabbitmq
     environment:
-      REDIS_URL: redis://redis:6379
-      RABBITMQ: amqp://rabbitmq:5672
+      - REDIS_URL=redis://redis:6379
+      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
+    depends_on:
+      redis:
+        condition: service_healthy # <-- YEH ZAROORI HAI
+      rabbitmq:
+        condition: service_healthy # <-- YEH ZAROORI HAI
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    healthcheck: # <-- REDIS KE LIYE BHI HEALTHCHECK ADD KIYA HAI
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management
