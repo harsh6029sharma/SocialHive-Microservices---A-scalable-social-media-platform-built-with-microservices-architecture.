@@ -1,10 +1,4 @@
 services:
-  # Redis Database
-  - name: redis
-    type: redis
-    plan: free
-    ipAllowList: []   # allow all by default
-
   # API Gateway
   - name: api-gateway
     type: web
@@ -12,26 +6,22 @@ services:
     env: docker
     dockerfilePath: ./api-gateway/Dockerfile
     envVars:
+      - key: PORT
+        value: 3000
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: redis
-          property: connectionString
+        value: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      - key: RABBITMQ_URL
+        value: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      - key: MONGODB_URI
+        value: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
       - key: IDENTITY_SERVICE_URL
-        fromService:
-          type: web
-          name: identity-service
-          property: url
+        value: https://identity-service.onrender.com
       - key: POST_SERVICE_URL
-        fromService:
-          type: web
-          name: post-service
-          property: url
-      - key: NOTIFICATION_SERVICE_URL
-        fromService:
-          type: web
-          name: notification-service
-          property: url
+        value: https://post-service.onrender.com
+      - key: MEDIA_SERVICE_URL
+        value: https://media-service.onrender.com
+      - key: SEARCH_SERVICE_URL
+        value: https://search-service.onrender.com
 
   # Identity Service
   - name: identity-service
@@ -40,11 +30,14 @@ services:
     env: docker
     dockerfilePath: ./identity-service/Dockerfile
     envVars:
+      - key: PORT
+        value: 3001
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: redis
-          property: connectionString
+        value: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      - key: RABBITMQ_URL
+        value: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      - key: MONGODB_URI
+        value: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
   # Post Service
   - name: post-service
@@ -53,21 +46,43 @@ services:
     env: docker
     dockerfilePath: ./post-service/Dockerfile
     envVars:
+      - key: PORT
+        value: 3002
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: redis
-          property: connectionString
+        value: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      - key: RABBITMQ_URL
+        value: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      - key: MONGODB_URI
+        value: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
-  # Notification Service
-  - name: notification-service
+  # Media Service
+  - name: media-service
     type: web
     plan: free
     env: docker
-    dockerfilePath: ./notification-service/Dockerfile
+    dockerfilePath: ./media-service/Dockerfile
     envVars:
+      - key: PORT
+        value: 3003
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: redis
-          property: connectionString
+        value: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      - key: RABBITMQ_URL
+        value: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      - key: MONGODB_URI
+        value: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
+
+  # Search Service
+  - name: search-service
+    type: web
+    plan: free
+    env: docker
+    dockerfilePath: ./search-service/Dockerfile
+    envVars:
+      - key: PORT
+        value: 3004
+      - key: REDIS_URL
+        value: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      - key: RABBITMQ_URL
+        value: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      - key: MONGODB_URI
+        value: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
