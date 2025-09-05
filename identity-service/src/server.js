@@ -24,6 +24,7 @@ const redisClient= new Redis(process.env.REDIS_URL)
 app.use(helmet())
 app.use(cors())
 app.use(express.json())
+app.set('trust proxy', 1); // 1 = first proxy (Railway, Heroku, etc.)
 
 //logging middleware
 app.use((req,res,next)=>{
