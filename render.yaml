@@ -7,7 +7,7 @@ services:
 
   - name: api-gateway
     type: web
-    plan: starter
+    plan: free
     env: docker
     dockerfilePath: ./api-gateway/Dockerfile
     envVars:
@@ -20,27 +20,29 @@ services:
         sync: false
       - key: IDENTITY_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: identity-service
           property: url
       - key: POST_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: post-service
           property: url
       - key: MEDIA_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: media-service
           property: url
       - key: SEARCH_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: search-service
           property: url
+      - key: MONGO_URI
+        sync: false
 
   - name: identity-service
-    type: pserv
+    type: web
     plan: free
     env: docker
     dockerfilePath: ./identity-service/Dockerfile
@@ -56,7 +58,7 @@ services:
         sync: false
 
   - name: post-service
-    type: pserv
+    type: web
     plan: free
     env: docker
     dockerfilePath: ./post-service/Dockerfile
@@ -72,7 +74,7 @@ services:
         sync: false
 
   - name: media-service
-    type: pserv
+    type: web
     plan: free
     env: docker
     dockerfilePath: ./media-service/Dockerfile
@@ -88,7 +90,7 @@ services:
         sync: false
 
   - name: search-service
-    type: pserv
+    type: web
     plan: free
     env: docker
     dockerfilePath: ./search-service/Dockerfile
@@ -102,4 +104,3 @@ services:
         sync: false
       - key: MONGO_URI
         sync: false
-
