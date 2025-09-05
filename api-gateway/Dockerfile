@@ -1,18 +1,17 @@
 # Use Node.js 18 Alpine image
 FROM node:18-alpine
 
-# Set correct working directory
+# Set working directory
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
-# Install only production dependencies
-RUN npm ci --omit=dev
+# Install dependencies
+RUN npm install --omit=dev
 
 # Copy rest of the app
 COPY . .
-
 # Expose port
 EXPOSE 3000
 
