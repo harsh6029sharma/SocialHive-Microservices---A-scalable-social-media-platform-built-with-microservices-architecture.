@@ -1,89 +1,61 @@
+version: "3.9"
+
 services:
   api-gateway:
     build: ./api-gateway
     ports:
       - "3000:3000"
-    env_file: ./api-gateway/.env
     environment:
-      # Environment variables yahan override ho jaate hain
-      - REDIS_URL=redis://redis:6379
-      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
+      PORT: 3000
+      REDIS_URL: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      RABBITMQ_URL: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      POST_SERVICE_URL: http://post-service:3002
+      MEDIA_SERVICE_URL: http://media-service:3003
+      SEARCH_SERVICE_URL: http://search-service:3004
     depends_on:
-      # Gateway ko sabhi services ke taiyaar hone ka wait karna chahiye
-      identity-service:
-        condition: service_started
-      post-service:
-        condition: service_started
-      media-service:
-        condition: service_started
-      search-service:
-        condition: service_started
+      - identity-service
+      - post-service
+      - media-service
+      - search-service
 
   identity-service:
     build: ./identity-service
-    env_file: ./identity-service/.env
+    ports:
+      - "3001:3001"
     environment:
-      - REDIS_URL=redis://redis:6379
-      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
-    depends_on:
-      redis:
-        condition: service_healthy # <-- YEH ZAROORI HAI
-      rabbitmq:
-        condition: service_healthy # <-- YEH ZAROORI HAI
+      PORT: 3001
+      REDIS_URL: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      RABBITMQ_URL: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
   post-service:
     build: ./post-service
-    env_file: ./post-service/.env
+    ports:
+      - "3002:3002"
     environment:
-      - REDIS_URL=redis://redis:6379
-      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
-    depends_on:
-      redis:
-        condition: service_healthy # <-- YEH ZAROORI HAI
-      rabbitmq:
-        condition: service_healthy # <-- YEH ZAROORI HAI
+      PORT: 3002
+      REDIS_URL: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      RABBITMQ_URL: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
   media-service:
     build: ./media-service
-    env_file: ./media-service/.env
+    ports:
+      - "3003:3003"
     environment:
-      - REDIS_URL=redis://redis:6379
-      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
-    depends_on:
-      redis:
-        condition: service_healthy # <-- YEH ZAROORI HAI
-      rabbitmq:
-        condition: service_healthy # <-- YEH ZAROORI HAI
+      PORT: 3003
+      REDIS_URL: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      RABBITMQ_URL: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
 
   search-service:
     build: ./search-service
-    env_file: ./search-service/.env
+    ports:
+      - "3004:3004"
     environment:
-      - REDIS_URL=redis://redis:6379
-      - MESSAGE_BROKER_URL=amqp://rabbitmq:5672
-    depends_on:
-      redis:
-        condition: service_healthy # <-- YEH ZAROORI HAI
-      rabbitmq:
-        condition: service_healthy # <-- YEH ZAROORI HAI
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-    healthcheck: # <-- REDIS KE LIYE BHI HEALTHCHECK ADD KIYA HAI
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      PORT: 3004
+      REDIS_URL: rediss://default:AYjlAAIncDE4Yjg4NGE2ZWExY2I0NTNmYWIyOWM2YzMyNTUyOGE2N3AxMzUwNDU@proven-gazelle-35045.upstash.io:6379
+      RABBITMQ_URL: amqps://trufeodz:X9OLf7Uawv0ibqpdKxRn1ePGwFBFOZxG@puffin.rmq2.cloudamqp.com/trufeodz
+      MONGODB_URI: mongodb+srv://harshsharmahs081:WSAZJ6pK9SZvDp6k@cluster0.e7634ss.mongodb.net/
