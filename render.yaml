@@ -1,33 +1,33 @@
 # Render Blueprint (render.yaml) for SocialHive Microservices
-# Ye file aapke docker-compose.yml ka Render version hai.
+# YEH CORRECTED VERSION HAI
 
 services:
   # 1. Managed Database Services
-  # Hum Docker image ke bajaye Render ki managed service use kar rahe hain.
   - name: redis
     type: redis
-    plan: free # Production ke liye paid plan use karein
+    plan: free
+    # ERROR FIX 1: IP Allow List add kiya gaya hai
+    # Isse humari sabhi services Redis se connect kar payengi.
+    ipAllowList:
+      - group: all # 'all' group ka matlab hai is project ki sabhi services
 
   # 2. Public Facing Service (API Gateway)
-  # Yeh service public internet se traffic receive karegi.
   - name: api-gateway
     type: web
-    plan: starter # Ya aapki traffic ke hisaab se koi aur plan
+    plan: starter
     env: docker
-    # Apne api-gateway folder mein Dockerfile ka path dein
     dockerfilePath: ./api-gateway/Dockerfile
     envVars:
-      # Render Redis service ka internal URL automatically inject kar dega.
+      # ERROR FIX 2: 'internalUrl' ko 'connectionString' se replace kiya gaya hai
       - key: REDIS_URL
         fromService:
           type: redis
           name: redis
-          property: internalUrl
-      # RabbitMQ ka URL hum secrets se lenge (niche explanation dekhein).
+          property: connectionString
+      # ERROR FIX 3: Secrets ko handle karne ka sahi tarika
       - key: MESSAGE_BROKER_URL
-        fromSecret: RABBITMQ_URL
-      # Baki services ke internal URLs bhi Render automatically dega.
-      # NOTE: Ensure your code uses these env vars to connect to other services.
+        sync: false # Iski value hum Render dashboard me set karenge
+      # NOTE: 'url' property sahi hai, doosre errors ki wajah se galat dikh raha tha.
       - key: IDENTITY_SERVICE_URL
         fromService:
           type: pserv
@@ -50,9 +50,8 @@ services:
           property: url
 
   # 3. Internal Private Services
-  # Ye services sirf aapas mein ya API Gateway se communicate karengi.
   - name: identity-service
-    type: pserv # 'pserv' for Private Service
+    type: pserv
     plan: free
     env: docker
     dockerfilePath: ./identity-service/Dockerfile
@@ -61,11 +60,11 @@ services:
         fromService:
           type: redis
           name: redis
-          property: internalUrl
+          property: connectionString
       - key: MESSAGE_BROKER_URL
-        fromSecret: RABBITMQ_URL
-      - key: MONGO_URI # Example: MongoDB connection string
-        fromSecret: MONGO_URI # Ise bhi secrets me daalein
+        sync: false
+      - key: MONGO_URI
+        sync: false # Iski value bhi dashboard me set karenge
 
   - name: post-service
     type: pserv
@@ -77,11 +76,11 @@ services:
         fromService:
           type: redis
           name: redis
-          property: internalUrl
+          property: connectionString
       - key: MESSAGE_BROKER_URL
-        fromSecret: RABBITMQ_URL
+        sync: false
       - key: MONGO_URI
-        fromSecret: MONGO_URI
+        sync: false
 
   - name: media-service
     type: pserv
@@ -93,11 +92,11 @@ services:
         fromService:
           type: redis
           name: redis
-          property: internalUrl
+          property: connectionString
       - key: MESSAGE_BROKER_URL
-        fromSecret: RABBITMQ_URL
+        sync: false
       - key: MONGO_URI
-        fromSecret: MONGO_URI
+        sync: false
 
   - name: search-service
     type: pserv
@@ -109,8 +108,9 @@ services:
         fromService:
           type: redis
           name: redis
-          property: internalUrl
+          property: connectionString
       - key: MESSAGE_BROKER_URL
-        fromSecret: RABBITMQ_URL
+        sync: false
       - key: MONGO_URI
-        fromSecret: MONGO_URI
+        sync: false
+
